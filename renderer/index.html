@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revoada — 4Cloud Apps</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7b8cff"/>
+              <stop offset="1" stop-color="#22d3b6"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#lg)"/>
+          <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 46q6.5-10 13 0q6.5-10 13 0" stroke-width="4.4"/>
+            <path d="M26 32q5-8 10 0q5-8 10 0" stroke-width="3.6" opacity=".92"/>
+            <path d="M40 19q3.8-5.5 7.6 0q3.8-5.5 7.6 0" stroke-width="3" opacity=".82"/>
+          </g>
+        </svg>
+        <div>
+          <h1>Revoada</h1>
+          <p>Suas pastas, em revoada para a nuvem</p>
+        </div>
+      </div>
+
+      <div class="remote-pick">
+        <span class="lbl">Remote</span>
+        <div class="select"><select id="remote" aria-label="Remote do rclone"></select></div>
+        <button class="icon-btn" id="reloadRemotes" title="Recarregar lista de remotes"></button>
+        <button class="ghost-btn" id="manage" title="Adicionar ou gerenciar conexões (SharePoint, OneDrive…)"><span id="manageIcon"></span>Conexões</button>
+      </div>
+    </header>
+
+    <div id="banner" class="banner" hidden></div>
+
+    <main id="main"></main>
+
+    <footer class="bar">
+      <div class="opts">
+        <label class="switch"><input type="checkbox" id="optSub"><span class="track"></span><span class="txt">Criar subpasta com o nome da origem</span></label>
+        <label class="switch"><input type="checkbox" id="optDry"><span class="track"></span><span class="txt">Simular (sem copiar)</span></label>
+        <div class="extra"><span>Flags extras</span><input id="extra" placeholder="--transfers 8 --exclude *.tmp" spellcheck="false"></div>
+      </div>
+      <div class="launch">
+        <div class="cmd">
+          <span class="prompt">$</span>
+          <code id="cmd"></code>
+          <button id="copyCmd" class="icon-btn" title="Copiar comando"></button>
+        </div>
+        <button id="start" class="primary"><span id="startIcon"></span><span>Iniciar cópia</span></button>
+      </div>
+    </footer>
+
+
+    <div class="credit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="url(#cg)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7b8cff"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>
+        <path d="M17.5 19a4.5 4.5 0 1 0-1.2-8.84A6 6 0 0 0 4.5 12.5 3.5 3.5 0 0 0 6 19z"/><path d="M12.6 12 9.6 15.6h4.6M12.6 12v5"/>
+      </svg>
+      <span class="wm"><b>4Cloud</b> Apps</span>
+      <span class="dot">·</span>
+      <span>Revoada 1.2.0</span>
+    </div>
+
+    <div id="overlay" class="overlay" hidden></div>
+    <div id="connOverlay" class="overlay" hidden></div>
+  </div>
+  <script src="app.js"></script>
+  <script src="connections.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revoada — suas pastas, em revoada para a nuvem</title>
+<meta name="description" content="Interface visual para copiar pastas e arquivos entre o seu computador e o SharePoint, OneDrive, Google Drive, Dropbox e mais, usando o rclone. Para Linux e Windows.">
+<meta property="og:title" content="Revoada — suas pastas, em revoada para a nuvem">
+<meta property="og:description" content="Copie pastas e arquivos para a nuvem com dois painéis lado a lado, sem decorar comandos. Usa o rclone por baixo.">
+<meta property="og:image" content="https://psychookov.github.io/revoada/img/principal.png">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<style>
+@font-face { font-family: "Inter"; src: url("assets/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+:root {
+  --bg: #080b14; --panel: #0f1424; --panel-2: #151c33; --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.14);
+  --text: #e9edf9; --muted: #98a2c3; --faint: #646e8f; --a: #7b8cff; --b: #2dd4bf;
+  --grad: linear-gradient(135deg, #7b8cff 0%, #2dd4bf 100%);
+  --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "DejaVu Sans Mono", monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font: 16px/1.6 Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(900px 500px at 15% -10%, rgba(123,140,255,.16), transparent 60%), radial-gradient(800px 480px at 95% 5%, rgba(45,212,191,.12), transparent 60%);
+  background-repeat: no-repeat;
+}
+a { color: inherit; }
+.wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 20px; letter-spacing: -.01em; text-decoration: none; }
+.brand img { width: 36px; height: 36px; border-radius: 10px; }
+nav .links { display: flex; gap: 22px; align-items: center; font-size: 14px; color: var(--muted); }
+nav .links a { text-decoration: none; }
+nav .links a:hover { color: var(--text); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 15px;
+  text-decoration: none; border: 1px solid var(--line-2); background: var(--panel-2); color: var(--text); transition: transform .15s, border-color .15s;
+}
+.btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.28); }
+.btn.primary { background: var(--grad); color: #07101a; border-color: transparent; box-shadow: 0 10px 30px -10px rgba(123,140,255,.65); }
+.hero { text-align: center; padding: 56px 0 28px; }
+.pill { display: inline-block; padding: 6px 14px; border-radius: 99px; font-size: 13px; color: var(--muted); border: 1px solid var(--line-2); background: rgba(255,255,255,.03); }
+h1 { font-size: clamp(38px, 7vw, 68px); line-height: 1.05; letter-spacing: -.035em; margin: 22px auto 18px; max-width: 14ch; }
+h1 em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { max-width: 640px; margin: 0 auto 30px; color: var(--muted); font-size: 18px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.shot { margin: 44px auto 0; border-radius: 18px; border: 1px solid var(--line-2); overflow: hidden; box-shadow: 0 40px 90px -30px rgba(0,0,0,.8), 0 0 0 8px rgba(255,255,255,.02); max-width: 940px; }
+.shot img { display: block; width: 100%; height: auto; }
+section { padding: 84px 0 0; }
+h2 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -.025em; line-height: 1.15; margin-bottom: 12px; }
+.sub { color: var(--muted); max-width: 640px; margin-bottom: 34px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+.card { padding: 22px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)); border: 1px solid var(--line); }
+.card .ic { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: rgba(123,140,255,.14); color: var(--a); margin-bottom: 14px; font-size: 20px; }
+.card h3 { font-size: 17px; margin-bottom: 6px; letter-spacing: -.01em; }
+.card p { color: var(--muted); font-size: 14.5px; }
+.how { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; counter-reset: s; }
+.step { position: relative; padding: 22px; border-radius: 16px; border: 1px solid var(--line); background: var(--panel); }
+.step::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--grad); color: #07101a; font-weight: 700; margin-bottom: 12px; }
+.step h3 { font-size: 16px; margin-bottom: 4px; }
+.step p { color: var(--muted); font-size: 14.5px; }
+code, pre { font-family: var(--mono); }
+pre { padding: 18px 20px; border-radius: 14px; background: #060913; border: 1px solid var(--line); color: #cfe3ff; overflow-x: auto; font-size: 14px; line-height: 1.7; }
+pre .p { color: var(--b); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.shots2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+.shots2 figure { border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); background: var(--panel); }
+.shots2 img { display: block; width: 100%; height: auto; }
+.shots2 figcaption { padding: 12px 16px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); }
+.dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.dl .card h3 { display: flex; align-items: center; gap: 10px; }
+.dl ul { margin: 12px 0 18px 18px; color: var(--muted); font-size: 14.5px; }
+.dl li { margin-bottom: 4px; }
+details { border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; background: var(--panel); margin-bottom: 10px; }
+summary { cursor: pointer; font-weight: 600; }
+details p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+footer { margin-top: 90px; padding: 34px 0 50px; border-top: 1px solid var(--line); color: var(--faint); font-size: 14px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; }
+footer a { color: var(--muted); }
+@media (max-width: 720px) { nav .links a:not(.btn) { display: none; } .two { grid-template-columns: 1fr; } section { padding-top: 64px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="assets/icon.svg" alt="">Revoada</a>
+    <div class="links">
+      <a href="#recursos">Recursos</a><a href="#como">Como funciona</a><a href="#baixar">Baixar</a><a href="#duvidas">Dúvidas</a>
+      <a class="btn" href="https://github.com/psychookov/revoada">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="pill">Linux · Windows · código aberto</span>
+    <h1>Suas pastas, em <em>revoada</em> para a nuvem.</h1>
+    <p class="lead">Copie pastas e arquivos entre o seu computador e o SharePoint, OneDrive, Google Drive, Dropbox e dezenas de outros serviços. Dois painéis lado a lado, sem decorar comandos. Por baixo, o confiável rclone.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/psychookov/revoada/releases/latest">Baixar o Revoada</a>
+      <a class="btn" href="#como">Ver como funciona</a>
+    </div>
+    <div class="shot"><img src="img/principal.png" alt="Tela principal do Revoada, com o computador à esquerda e a nuvem à direita"></div>
+  </header>
+
+  <section id="recursos">
+    <h2>Tudo o que o terminal faz, só que visual.</h2>
+    <p class="sub">O Revoada não substitui o rclone: ele é uma casca bonita por cima dele. O comando que será executado aparece sempre na tela, sem mistério.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">⇄</div><h3>Dois painéis</h3><p>Navegue pelo computador e pela nuvem lado a lado, com pastas e arquivos. Troque origem e destino com um clique.</p></div>
+      <div class="card"><div class="ic">▤</div><h3>Pastas ou um arquivo só</h3><p>Escolha uma pasta inteira ou um único arquivo para copiar. No destino, os arquivos aparecem só para consulta.</p></div>
+      <div class="card"><div class="ic">$</div><h3>Comando transparente</h3><p>Veja o <code>rclone copy</code> exato, copie-o e acrescente flags extras. Marque <em>Simular</em> para ensaiar sem copiar nada.</p></div>
+      <div class="card"><div class="ic">◔</div><h3>Progresso ao vivo</h3><p>Porcentagem, velocidade, tempo restante e arquivos em transferência, com cancelamento a qualquer momento.</p></div>
+      <div class="card"><div class="ic">☁</div><h3>Conexões no próprio app</h3><p>Conecte SharePoint, OneDrive, Google Drive, Dropbox ou qualquer serviço do rclone com um assistente guiado e login pelo navegador.</p></div>
+      <div class="card"><div class="ic">⤓</div><h3>Backup da configuração</h3><p>Exporte o seu <code>rclone.conf</code> antes de formatar e importe depois, escolhendo quais conexões restaurar.</p></div>
+    </div>
+  </section>
+
+  <section id="como">
+    <h2>Em quatro passos.</h2>
+    <p class="sub">Da primeira conexão à cópia concluída.</p>
+    <div class="how">
+      <div class="step"><h3>Conecte uma conta</h3><p>Em <em>Conexões › Nova conexão</em>, escolha o serviço e autorize no navegador. Já tem um <code>rclone.conf</code>? Importe-o.</p></div>
+      <div class="step"><h3>Escolha origem e destino</h3><p>Navegue nos dois painéis. Clique em um arquivo para copiar só ele, ou deixe apenas a pasta.</p></div>
+      <div class="step"><h3>Confira o comando</h3><p>Revise o <code>rclone copy</code> mostrado na tela. Se quiser, simule antes.</p></div>
+      <div class="step"><h3>Inicie a cópia</h3><p>Acompanhe o progresso em tempo real. O rclone cuida do resto.</p></div>
+    </div>
+    <div class="shots2">
+      <figure><img src="img/assistente.png" alt="Assistente de nova conexão" loading="lazy"><figcaption>Assistente de nova conexão: SharePoint, OneDrive, Google Drive, Dropbox e mais.</figcaption></figure>
+      <figure><img src="img/conexoes.png" alt="Lista de conexões" loading="lazy"><figcaption>Conexões: teste, reconecte, remova, exporte e importe backups.</figcaption></figure>
+      <figure><img src="img/importar.png" alt="Importar backup do rclone" loading="lazy"><figcaption>Importar um <code>rclone.conf</code>: você escolhe o que trazer.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="baixar">
+    <h2>Baixar.</h2>
+    <p class="sub">Escolha a sua plataforma na página de versões. Os arquivos ficam em <em>Assets</em>.</p>
+    <div class="dl">
+      <div class="card">
+        <h3>🐧 Linux · AppImage</h3>
+        <ul>
+          <li>Precisa do rclone instalado (<code>sudo dnf install rclone</code>, <code>pacman -S rclone</code>, <code>apt install rclone</code>).</li>
+          <li>Se não abrir, rode com <code>--appimage-extract-and-run</code>.</li>
+        </ul>
+<pre><span class="p">$</span> chmod +x Revoada-*.AppImage
+<span class="p">$</span> ./Revoada-*.AppImage</pre>
+      </div>
+      <div class="card">
+        <h3>🪟 Windows 10 / 11 · portátil</h3>
+        <ul>
+          <li>Extraia a pasta inteira do .zip e abra <code>Revoada.exe</code>.</li>
+          <li>O <code>rclone.exe</code> já vem incluído.</li>
+          <li>Ainda sem assinatura digital: no aviso do SmartScreen, <em>Mais informações › Executar assim mesmo</em>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta" style="margin-top:22px;justify-content:flex-start">
+      <a class="btn primary" href="https://github.com/psychookov/revoada/releases/latest">Ir para as versões</a>
+      <a class="btn" href="https://github.com/psychookov/revoada#construir-a-partir-do-código">Construir do código</a>
+    </div>
+  </section>
+
+  <section id="duvidas">
+    <h2>Dúvidas.</h2>
+    <p class="sub"></p>
+    <details><summary>O Revoada substitui o rclone?</summary><p>Não. Ele usa o rclone instalado (ou o que vem junto no pacote do Windows) para fazer todo o trabalho. O Revoada só torna o processo visual.</p></details>
+    <details><summary>Onde ficam as minhas senhas e tokens?</summary><p>Apenas no <code>rclone.conf</code>, como em qualquer uso do rclone. A interface do app nunca recebe os tokens. O backup exportado contém esses tokens: guarde-o como uma senha.</p></details>
+    <details><summary>O app envia dados para algum lugar?</summary><p>Não há telemetria. O app só conversa com o rclone da sua máquina, e o rclone com o serviço de nuvem que você escolheu.</p></details>
+    <details><summary>Importar um backup pode apagar minhas conexões?</summary><p>Não. Uma conexão que já existe só é substituída se você marcar <em>substituir</em>, e uma cópia da configuração anterior é guardada antes de qualquer gravação.</p></details>
+    <details><summary>Posso usar com outros serviços além do SharePoint?</summary><p>Sim: OneDrive, Google Drive, Dropbox e todos os serviços suportados pelo rclone (S3, SFTP, WebDAV, Box, MEGA e muitos outros) pela opção <em>Outro serviço</em>.</p></details>
+  </section>
+
+  <footer>
+    <span>Revoada · por <a href="https://github.com/psychookov">4Cloud Apps</a> · licença MIT</span>
+    <span>Projeto independente, não afiliado ao rclone, Microsoft, Google ou Dropbox.</span>
+  </footer>
+</div>
+</body>
+</html>

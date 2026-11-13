@@ -1,0 +1,58 @@
+{
+  "name": "revoada",
+  "productName": "Revoada",
+  "version": "1.2.0",
+  "description": "Interface visual para copiar pastas locais para a nuvem usando o rclone",
+  "main": "main.js",
+  "author": "4Cloud Apps",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron . --no-sandbox",
+    "dist": "electron-builder --linux AppImage",
+    "dist:win": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "dev.mnunes.revoada",
+    "productName": "Revoada",
+    "artifactName": "Revoada-${version}-x86_64.AppImage",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility",
+      "icon": "build/icon.png",
+      "executableName": "revoada"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/psychookov/revoada.git"
+  },
+  "homepage": "https://psychookov.github.io/revoada/",
+  "bugs": {
+    "url": "https://github.com/psychookov/revoada/issues"
+  }
+}
